@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE package-info SYSTEM "http://www.simplemachines.org/xml/package-info">
+<package-info xmlns="http://www.simplemachines.org/xml/package-info" xmlns:smf="http://www.simplemachines.org/">
+	<id>VRBS:Vileo Referral and Coin System</id>
+	<name>Vileo Referral and Coin System</name>
+	<type>modification</type>
+	<version>1.0.0</version>	    
+	<install>	
+		<!-- Readme -->
+		<readme parsebbc="true">readme.txt</readme>			
+		<!-- Install files -->
+		<database>install.php</database>
+		<!-- Package files -->
+	</install>	    	
+	<uninstall>		
+		<!-- Install files -->
+		<database>uninstall.php</database>				
+		<!-- Package files -->
+	</uninstall>	
+</package-info>
