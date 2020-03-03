@@ -65,7 +65,7 @@ $smcFunc['db_create_table']('{db_prefix}vrcs_stat', array(
 			'default' => '0'
 		),
 		array(
-			'name' => 'id_referer',
+			'name' => 'id_referrer',
 			'type' => 'int',
 			'unsigned' => '1',
 			'default' => '0'

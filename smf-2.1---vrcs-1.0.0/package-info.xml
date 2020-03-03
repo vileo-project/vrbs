@@ -13,6 +13,7 @@
 		<database>install.php</database>
 		<!-- Package files -->
 		<require-file name="/package-files/Sources/VRCS-Subs.php" destination="$sourcedir" />
+		<require-file name="/package-files/Theme/images/icon_copy.svg" destination="$themedir/images" />
 	</install>
 	<uninstall>
 		<!-- Install files -->
@@ -20,5 +21,6 @@
 		<database>uninstall.php</database>
 		<!-- Package files -->
 		<remove-file name="$sourcedir/VRCS-Subs.php" />
+		<remove-file name="$themedir/images/icon_copy.svg" />
 	</uninstall>
 </package-info>

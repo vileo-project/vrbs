@@ -11,7 +11,230 @@
 	regReferral($memberID);
 	]]>
 		</add>
-	</operation>	
+	</operation>
+</file>
+
+<file name="$languagedir/Modifications.russian.php">
+	<operation>
+		<search position="end" />
+			<add><![CDATA[
+//Vileo Referral Program
+$txt['VRCS_total_users'] = 'Вы пригласили пользователей';
+$txt['VRCS_total_post'] = 'Сообщений';
+$txt['VRCS_counter_l2'] = 'Рефералов второго уровня';
+$txt['VRCS_counter_l3'] = 'Рефералов третего уровня';
+$txt['VRCS_profileReferral'] = 'Реферальная программа';
+$txt['VRCS_resource_name'] = 'Имя';
+$txt['VRCS_reflink'] = 'Реферальная ссылка';
+			]]></add>
+	</operation>
+</file>
+
+<file name="$languagedir/Modifications.english.php">
+	<operation>
+		<search position="end" />
+			<add><![CDATA[
+//Vileo Referral Program
+$txt['VRCS_total_users'] = 'You have invited users';
+$txt['VRCS_total_post'] = 'Posts';
+$txt['VRCS_counter_l2'] = 'Referrals of the second level';
+$txt['VRCS_counter_l3'] = 'Referrals of the third level';
+$txt['VRCS_profileReferral'] = 'Referral program';
+$txt['VRCS_resource_name'] = 'Name';
+$txt['VRCS_reflink'] = 'Referral link';
+			]]></add>
+	</operation>
+</file>
+
+<file name="$sourcedir/Profile-View.php">
+<operation>
+		<search position="end" />
+			<add><![CDATA[
+ /**
+ * Gets the user referral program for display
+ *
+ * @param int $memID The ID of the member
+ */
+function referralProgramPanel($memID)
+{
+	global $txt, $context, $modSettings, $smcFunc;
+
+	$context['page_title'] = $txt['VRCS_profileReferral'];
+
+	// Is the load average too high to allow searching just now?
+	if (!empty($context['load_average']) && !empty($modSettings['loadavg_userstats']) && $context['load_average'] >= $modSettings['loadavg_userstats'])
+		fatal_lang_error('loadavg_userstats_disabled', false);
+
+	// Menu tab.
+	$context[$context['profile_menu_name']]['tab_data'] = array(
+		'title' => $txt['VRCS_profileReferral'] . ' - ' . $context['member']['name'],
+		'icon' => 'stats_info.png'
+	);
+
+	// Get some data from database if id_reflink unique.
+	$result = $smcFunc['db_query']('', '
+		SELECT id_reflink, resource_name, counter_l1, posts_l1
+		FROM {db_prefix}vrcs_link
+		WHERE id_member = {int:current_member}',
+		array(
+			'current_member' => $memID,
+		)
+	);
+	list ($context['id_reflink'], $context['resource_name'], $context['counter_l1'], $context['posts_l1']) = $smcFunc['db_fetch_row']($result);
+	$smcFunc['db_free_result']($result);
+	
+	// Get counters and messages of the second and third levels from the database.
+	$result = $smcFunc['db_query']('', '
+		SELECT counter_l2, posts_l2, counter_l3, posts_l3
+		FROM {db_prefix}vrcs_stat
+		WHERE id_member = {int:current_member}',
+		array(
+			'current_member' => $memID,
+		)
+	);
+	list ($context['counter_l2'], $context['posts_l2'], $context['counter_l3'], $context['posts_l3']) = $smcFunc['db_fetch_row']($result);
+	$smcFunc['db_free_result']($result);
+}
+			]]></add>
+	</operation>
+</file>
+
+<file name="$sourcedir/Profile.php">
+	<operation>
+		<search position="after"><![CDATA[	);
+
+	// Let them modify profile areas easily.]]></search>
+	<add><![CDATA[		'profileReferral' => array(
+			'title' => $txt['VRCS_profileReferral'],
+			'areas' => array(
+				'referralprogram' => array(
+					'label' => '',
+					'file' => 'Profile-View.php',
+					'function' => 'referralProgramPanel',
+					'password' => true,
+					'icon' => 'stats',
+					'permission' => array(
+						'own' => 'is_not_guest',
+						'any' => 'profile_view',
+					),
+				),
+			),
+		),
+]]></add>
+	</operation>
+</file>
+
+<file name="$sourcedir/Profile.php">
+	<operation>
+		<search position="before"><![CDATA[		array(
+			'menu' => 'info',
+			'area' => 'showposts',
+			'title' => $txt['popup_showposts'],
+		),
+]]></search>
+		<add><![CDATA[		array(
+			'menu' => 'profileReferral',
+			'area' => 'referralprogram',
+			'title' => $txt['VRCS_profileReferral'],
+		),
+]]></add>
+	</operation>
+</file>
+
+<file name="$themedir/Profile.template.php">
+	<operation>
+		<search position="end" />
+		<add><![CDATA[
+/**
+ * Template for user referral program statistics, show statistic.
+ */
+function template_referralProgramPanel()
+{
+	global $context, $txt, $scripturl;
+
+	if ($context['user']['is_owner'] || $context['user']['is_admin'])
+		echo '
+			<div id="profileview" class="roundframe flow_auto">
+				<dl class="settings">
+					<dt>
+						<strong>', $txt['VRCS_reflink'], ':</strong>
+					</dt>
+					<dd>
+							<a href="', $scripturl, '?reflink=', $context['id_reflink'], '" id="p1">', $scripturl, '?reflink=', $context['id_reflink'], '</a>
+							<a href="#"> <img width="24px" src="../forum/Themes/default/images/icon_copy.svg" onclick="copyToClipboard(&apos;#p1&apos;)"></a>
+					</dd>
+				</dl>
+			</div>
+			<script>
+				function copyToClipboard(element) {
+					var $temp = $("<input>");
+					  $("body").append($temp);
+					  $temp.val($(element).text()).select();
+					  document.execCommand("copy");
+					  $temp.remove();
+				}
+			</script>
+			';
+
+	// First, show a few text statistics such as post/topic count.
+	echo '
+		<div id="profileview" class="roundframe flow_auto">
+			<dl class="settings">
+				<dt>
+					<strong>', $txt['VRCS_total_users'], ':</strong>
+				</dt>
+				<dd>
+					', $context['counter_l1'], '
+				</dd>
+				<dt>
+					<strong>', $txt['VRCS_total_post'], ':</strong>
+				</dt>
+				<dd>
+					', $context['posts_l1'], '
+				</dd>
+				<dt>
+					<strong>', $txt['VRCS_counter_l2'], ':</strong>
+				</dt>
+				<dd>
+					', $context['counter_l2'], '
+				</dd>
+				<dt>
+					<strong>', $txt['VRCS_total_post'], ':</strong>
+				</dt>
+				<dd>
+					', $context['posts_l2'], '
+				</dd>
+				<dt>
+					<strong>', $txt['VRCS_counter_l3'], ':</strong>
+				</dt>
+				<dd>
+					', $context['counter_l3'], '
+				</dd>
+				<dt>
+					<strong>', $txt['VRCS_total_post'], ':</strong>
+				</dt>
+				<dd>
+					', $context['posts_l3'], '
+				</dd>
+			</dl>
+		</div>';
+}
+]]></add>
+	</operation>
+</file>
+
+<file name="$themedir/GenericMenu.template.php">
+	<operation>
+		<search position="before"><![CDATA[<span class="amt">' . $section['amt'] . '</span>' : '', '</a>]]></search>
+		<add><![CDATA[';
+
+		if (empty(current($section['areas'])['label']) && count($section['areas']) == 1)
+		{
+			echo '</li>';
+			continue;
+		}
+		echo ']]></add>
+	</operation>
 </file>
 
 </modification>
