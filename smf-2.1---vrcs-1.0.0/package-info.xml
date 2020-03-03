@@ -4,17 +4,21 @@
 	<id>VRBS:Vileo Referral and Coin System</id>
 	<name>Vileo Referral and Coin System</name>
 	<type>modification</type>
-	<version>1.0.0</version>	    
-	<install>	
+	<version>1.0.0</version>
+	<install>
 		<!-- Readme -->
-		<readme parsebbc="true">readme.txt</readme>			
+		<readme parsebbc="true">readme.txt</readme>
 		<!-- Install files -->
+		<modification type="file">modification.xml</modification>
 		<database>install.php</database>
 		<!-- Package files -->
-	</install>	    	
-	<uninstall>		
+		<require-file name="/package-files/Sources/VRCS-Subs.php" destination="$sourcedir" />
+	</install>
+	<uninstall>
 		<!-- Install files -->
-		<database>uninstall.php</database>				
+		<modification type="file" reverse="true">modification.xml</modification>
+		<database>uninstall.php</database>
 		<!-- Package files -->
-	</uninstall>	
+		<remove-file name="$sourcedir/VRCS-Subs.php" />
+	</uninstall>
 </package-info>
