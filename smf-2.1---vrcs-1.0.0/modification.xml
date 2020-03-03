@@ -237,4 +237,43 @@ function template_referralProgramPanel()
 	</operation>
 </file>
 
+<file name="$boarddir/Settings.php">
+	<operation>
+		<search position="after"><![CDATA[########## Database Info ##########]]></search>
+		<add><![CDATA[$vrcsCookieName = 'vrcs_forum_cookie';
+		]]></add>
+	</operation>
+</file>
+
+<file name="$sourcedir/Load.php">
+	<operation>
+		<search position="before"><![CDATA[global $cookiename, ]]></search>
+		<add><![CDATA[$vrcsCookieName, ]]></add>
+	</operation>	
+</file>
+
+<file name="$sourcedir/Load.php">
+	<operation>
+		<search position="after"><![CDATA[// Is the member data cached?]]></search>
+		<add><![CDATA[
+		require_once($sourcedir . '/VRCS-Subs.php');
+		setReflinkCookie(null);
+		]]>
+		</add>
+	</operation>	
+</file>
+
+<file name="$sourcedir/Load.php">
+	<operation>
+		<search position="after"><![CDATA[if (empty($id_member) && isset($_COOKIE[$cookiename]))]]></search>
+	<add><![CDATA[if (!empty($_REQUEST['reflink']) && empty($id_member))
+	{
+		require_once($sourcedir . '/VRCS-Subs.php');
+		reflinkCookie($_REQUEST['reflink']);
+	}
+	]]>
+	</add>
+	</operation>	
+</file>
+
 </modification>
